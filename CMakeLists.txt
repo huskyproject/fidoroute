@@ -2,8 +2,6 @@ cmake_minimum_required(VERSION 2.8.11)
 PROJECT(fidoroute CXX)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-option(BUILD_SHARED_LIBS "Build shared libs" ON)
-
 if(CMAKE_BUILD_TYPE MATCHES Debug)
   ADD_DEFINITIONS(-g -DDEBUG -D_DEBUG)
   set(CMAKE_CONFIGURATION_TYPES "Debug" CACHE STRING "My multi config types" FORCE)
@@ -23,9 +21,6 @@ if (MSVC)
     list( APPEND CMAKE_FIND_ROOT_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../out/lib/Release" )
   endif(CMAKE_BUILD_TYPE MATCHES Debug)
 else ()
-  if (NOT BUILD_SHARED_LIBS)
-    SET(CMAKE_FIND_LIBRARY_SUFFIXES ".a")
-  endif()
   ADD_DEFINITIONS(-Wall -DUNIX)
 endif (MSVC)
 

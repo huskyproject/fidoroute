@@ -9,10 +9,10 @@ matrix:
   include:
   - os: linux
     env:
-    - MATRIX_EVAL="CXX=g++" ARCH="x86_64" CF=-DBUILD_SHARED_LIBS=OFF
+    - MATRIX_EVAL="CXX=g++" ARCH="x86_64"
   - os: linux
     env:
-    - MATRIX_EVAL="CXX='g++ -m32'" CF="-DBUILD_SHARED_LIBS=OFF -DCMAKE_LIBRARY_PATH=/usr/lib32"
+    - MATRIX_EVAL="CXX='g++ -m32'"
       PACKAGES="gcc-multilib lib32stdc++-4.8-dev" ARCH="i686"
     addons:
       apt:
@@ -20,10 +20,10 @@ matrix:
           - ubuntu-toolchain-r-test
   - os: osx
     env:
-    - MATRIX_EVAL="CC=g++" ARCH="x86_64" CF=-DBUILD_SHARED_LIBS=OFF
+    - MATRIX_EVAL="CC=g++" ARCH="x86_64"
   - os: osx
     env:
-    - MATRIX_EVAL="CC='g++ -m32'" ARCH="i686" CF=-DBUILD_SHARED_LIBS=OFF
+    - MATRIX_EVAL="CC='g++ -m32'" ARCH="i686"
 before_install:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install -y rpm; fi
   - if [ -n "$PACKAGES" ]; then travis_retry sudo apt-get install --no-install-recommends
@@ -32,7 +32,7 @@ script:
   - eval "${MATRIX_EVAL}"
   - mkdir build
   - cd build
-  - cmake .. ${CF} -DCPACK_DEBIAN_PACKAGE_MAINTAINER=travis-ci
+  - cmake .. -DCPACK_DEBIAN_PACKAGE_MAINTAINER=travis-ci
   - cmake --build .
   - cpack
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then cpack -G RPM; fi
