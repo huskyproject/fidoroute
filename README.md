@@ -6,7 +6,8 @@
 **Fidoroute** is a Fidonet node route file generator
 
 ## NAME
-       fidoroute - fidonet node route file generator
+
+**fidoroute** - fidonet node route file generator
 
 ## SYNTAX
        fidoroute [config.file]
