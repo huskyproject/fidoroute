@@ -13,7 +13,7 @@ matrix:
   - os: linux
     env:
     - MATRIX_EVAL="CXX='g++ -m32'"
-      PACKAGES="gcc-multilib lib32stdc++-6-dev" ARCH="i686"
+      PACKAGES="gcc-multilib lib32stdc++6" ARCH="i686"
   - os: osx
     env:
     - MATRIX_EVAL="CC=g++" ARCH="x86_64"
