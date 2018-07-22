@@ -13,7 +13,7 @@ matrix:
   - os: linux
     env:
     - MATRIX_EVAL="CXX='g++ -m32'" CF="-DBUILD_SHARED_LIBS=OFF -DCMAKE_LIBRARY_PATH=/usr/lib32"
-      PACKAGES="gcc-multilib lib32stdc++6 libstdc++6" ARCH="i686"
+      PACKAGES="gcc-multilib lib32stdc++-4.8-dev" ARCH="i686"
     addons:
       apt:
         sources:
