@@ -1,0 +1,24 @@
+version: '{build}'
+branches:
+  only:
+    - master
+    - /^fidoroute-.*/
+image:
+  - Visual Studio 2017
+environment:
+  matrix:
+    - generator: Visual Studio 15 2017
+    - generator: Visual Studio 15 2017 Win64
+build_script:
+  - cmd: 
+      cd C:\projects\fidoroute && mkdir build && cd build && cmake --version &&  cmake .. -G "%GENERATOR%" && cmake --build . -- /P:Configuration=Release
+  - cmd: cpack
+artifacts:
+  - path: build\*.7z
+    name: dist
+deploy:
+  provider: GitHub
+  artifact: dist
+  auth_token: $(GITHUB_OAUTH_TOKEN)
+  on:
+    appveyor_repo_tag: true
