@@ -2105,9 +2105,13 @@ static boolean LoadConfig( void )
         }
       }
       if( KeyWordFailed || !PassOK( i ) )
+      {
+        fclose( cfg );
         return false;
+      }
       rewind( cfg );
     }
+    fclose( cfg );
     return true;
   }
   else
