@@ -3,16 +3,22 @@ branches:
   only:
     - master
     - /^fidoroute-.*/
-image:
-  - Visual Studio 2017
 environment:
   matrix:
     - generator: Visual Studio 15 2017
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+      pf: "msvc2017"
     - generator: Visual Studio 15 2017 Win64
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+      pf: "msvc2017"
+    - generator: Visual Studio 10 2010
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+      pf: "msvc2010"
 build_script:
   - cmd: 
       cd C:\projects\fidoroute && mkdir build && cd build && cmake --version &&  cmake .. -G "%GENERATOR%" && cmake --build . -- /P:Configuration=Release
   - cmd: cpack
+  - ps:  gci *.7z | %{ rename-item –path $_.Fullname –Newname ( $_.basename +"-"+$Env:pf+$_.extension) }
 artifacts:
   - path: build\*.7z
     name: dist
