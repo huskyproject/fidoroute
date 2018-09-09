@@ -1,7 +1,7 @@
 # fidoroute
 [![Build Status](https://travis-ci.org/huskyproject/fidoroute.svg?branch=master)](https://travis-ci.org/huskyproject/fidoroute)
 [![Build status](https://ci.appveyor.com/api/projects/status/nqakeew8dax0q4ps/branch/master?svg=true)](https://ci.appveyor.com/project/dukelsky/fidoroute/branch/master)
-
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/a3c20b32b80442a7955f7563fb24981a)](https://www.codacy.com/app/huskyproject/fidoroute?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=huskyproject/fidoroute&amp;utm_campaign=Badge_Grade)
 
 **Fidoroute** is a Fidonet node route file generator
 
