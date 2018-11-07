@@ -13,6 +13,9 @@ MAKEFILE_HUSKYMAK = ../../huskybse/huskymak.cfg.mvc
 #we must define LIBNAME before include $(MAKEFILE_HUSKYMAK)
 LIBNAME=fidoroute
 
+# Sources directory
+_SRC_DIR= ../
+
 ## include common makefiles part ##
 !include $(MAKEFILE_HUSKYMAK)
 
@@ -24,16 +27,16 @@ CFLAGS  = $(CFLAGS) -D__MSVC__
 PROGRAMS=$(LIBNAME)$(_EXE)
 
 default:
-	@echo "Specify a parameter MAKEFILE_HUSKYMAK=/path/to/your.huskymak.cfg to build"
-	@echo "using your own parameters"
-	@echo Run 'make all' to build ($(PROGRAMS))
+        @echo "Specify a parameter MAKEFILE_HUSKYMAK=/path/to/your.huskymak.cfg to build"
+        @echo "using your own parameters"
+        @echo Run 'make all' to build ($(PROGRAMS))
 
 all: programs
 programs: $(PROGRAMS) $(MAKEFILES)
 
 $(PROGRAMS):
         @echo Create $(PROGRAMS)...
-        @$(_SRC_DIR)$(CC) $(CFLAGS) $(OBJNAMEOPT)$(O)$*$(_OBJ) $(EXENAMEOPT)$(B)$@ $**
+        @$(CC) $(CFLAGS) $(OBJNAMEOPT)$(O)$*$(_OBJ) $(EXENAMEOPT)$(B)$@ $(_SRC_DIR)$(LIBNAME).cpp
 
 man:
 

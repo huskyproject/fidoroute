@@ -6,6 +6,9 @@
 # copy this file from ../../huskybse/huskymak.cfg.emx
 include ../../huskymak.cfg
 
+# Sources directory
+_SRC_DIR= ../
+
 PROGRAMS=fidoroute
 
 default:
@@ -17,4 +20,4 @@ default:
 all	: programs
 programs:
 	@echo Create $(PROGRAMS)...
-	$(CC) $(CFLAGS) $(CDEFS) $(CINCL) $(EXENAMEFLAG) $(PROGRAMS)$(_EXE) $(PROGRAMS).cpp
+	@$(CC) $(CFLAGS) $(CDEFS) $(CINCL) $(EXENAMEFLAG) $(PROGRAMS)$(_EXE) $(_SRC_DIR)$(PROGRAMS).cpp
