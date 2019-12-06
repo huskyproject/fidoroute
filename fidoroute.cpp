@@ -71,8 +71,12 @@
 #else /*defined (__GNUC__) */
 # if defined(_OS2) || defined (__OS2__)
 #  define TARGET "OS/2"
+# elif defined (__NT__) && defined (_WIN64)
+#  define TARGET "w64"
 # elif defined (__NT__)
-#  define TARGET "Win32"
+#  define TARGET "w32"
+# elif defined (__DJGPP__)
+#  define TARGET "dpmi-djgpp"
 # elif defined (__GNUC__)
 #  define TARGET "GNU/Unix"
 # else
