@@ -2161,10 +2161,10 @@ int main( int argc, char **argv )
     nLinks = 0;
     TempFile[0] = '\0';
     if( argc == 1 )
-#if defined(__GNUC__)
-      strcpy( CfgFile, "fidoroute.conf" );
-#else
+#if defined(__DJGPP__) || defined(__OS2__) || defined(__NT__)
       strcpy( CfgFile, "fidoroute.cfg" );
+#else
+      strcpy( CfgFile, "fidoroute.conf" );
 #endif
     else
       strcpy( CfgFile, argv[1] );
