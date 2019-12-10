@@ -13,7 +13,7 @@ matrix:
   - os: linux
     env:
     - MATRIX_EVAL="CXX='g++ -m32'"
-      PACKAGES="gcc-multilib lib32stdc++-4.8-dev" ARCH="i686"
+      PACKAGES="gcc-multilib lib32stdc++-5-dev" ARCH="i686"
     addons:
       apt:
         sources:
