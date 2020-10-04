@@ -60,8 +60,8 @@
 # define fnmerge _makepath
 #endif
 
-#define VERSION   "1.37"
-#define CREATED   "%c %s routing for %d:%d/%d. Created by Hubroute generator "VERSION""EOLCHR"%c %45s%c"EOLCHR""
+#define VERSION   "1.38"
+#define CREATED   "%c %s routing for %d:%d/%d. Created by Hubroute generator " VERSION "" EOLCHR "%c %45s%c" EOLCHR ""
 #ifdef _TARGET
 # if defined (__GNUC__)
 #  define TARGET "GNU/" _TARGET
@@ -532,22 +532,25 @@ static boolean IsWild( nodeaddr n )
 
 int CmpWild( void const *l1, void const *l2 )
 {
-  if( ( ( listitem * ) l1 )->addr.z > ( ( listitem * ) l2 )->addr.z )
+  listitem *pl1 = ( listitem * ) l1;
+  listitem *pl2 = ( listitem * ) l2;
+
+  if( pl1->addr.z > pl2->addr.z )
     return 1;
 
-  else if( ( ( listitem * ) l1 )->addr.z < ( ( listitem * ) l2 )->addr.z )
+  else if( pl1->addr.z < pl2->addr.z )
     return -1;
 
-  else if( ( ( listitem * ) l1 )->addr.n > ( ( listitem * ) l2 )->addr.n )
+  else if( pl1->addr.n > pl2->addr.n )
     return 1;
 
-  else if( ( ( listitem * ) l1 )->addr.n < ( ( listitem * ) l2 )->addr.n )
+  else if( pl1->addr.n < pl2->addr.n )
     return -1;
 
-  else if( ( ( listitem * ) l1 )->addr.f > ( ( listitem * ) l2 )->addr.f )
+  else if( pl1->addr.f > pl2->addr.f )
     return 1;
 
-  else if( ( ( listitem * ) l1 )->addr.f < ( ( listitem * ) l2 )->addr.f )
+  else if( pl1->addr.f < pl2->addr.f )
     return -1;
 
   else
@@ -1320,20 +1323,14 @@ ushort WriteNodeFtrack( nodeaddr Node, char *out, ushort addrtype )
     wildlevel++;
   if( Node.z == WILDVALUE )
     wildlevel++;
-  if( wildlevel == level || addrtype == 1 )
+  if( wildlevel == level || addrtype > 0 )
   {
     counter++;
     strcpy( out, prefix );
     if( level == 3 )
       strcat( out, "*" );
     else
-      WriteNode( Node, out + strlen( prefix ), addrtype );
-    strcat( out, postfix );
-  }
-  else if( wildlevel == 1 && addrtype == 0 && level == 0 )
-  {
-    strcpy( out, prefix );
-    WriteNode( Node, out + strlen( prefix ), 1 );
+      WriteNode( Node, out + strlen( prefix ), addrtype == 2 ? 1 : addrtype );
     strcat( out, postfix );
   }
   return ushort( strlen( out ) );
@@ -1361,30 +1358,42 @@ static void PutRoutingFtrack( void )
     int i;
     for( i = 0; i < nLinks; i++ )
     {
+      tmpNode = Link[i].addr;
       counter = 0;
       Buff[0] = 0;
-      if( level == 0 )
+      if( !level )
       {
-        WriteNodeFtrack( Link[i].addr, Buff, 0 );
-        Spit( Buff );
+        WriteNodeFtrack( tmpNode, Buff, 0 );
+
+        if ( Buff[0] )
+        {
+          Spit( Buff );
+          Buff[0] = 0;
+        }
         counter++;
-        Buff[0] = 0;
       }
-      PutDownLinksGeneric( InMemory( Link[i].addr ), 0, WriteNodeFtrack );
+      PutDownLinksGeneric( InMemory( tmpNode ), 0, WriteNodeFtrack );
       if( counter )
       {
-        sprintf( Buff, "Action: Route %s", GetFlavor( Link + i, SqFlavors ) );
+        ushort _host = !level
+            && ( DirectLink( tmpNode ) && MyNode->z == tmpNode.z && MyNode->n == tmpNode.n && tmpNode.f == WILDVALUE );
+
         AddPoint = false;
-        tmpNode = Link[i].addr;
-        if( DirectLink( tmpNode ) && MyNode->z == tmpNode.z && MyNode->n == tmpNode.n
-            && tmpNode.f == WILDVALUE )
+
+        if( _host )
         {
+          WriteNodeFtrack( tmpNode, Buff, 2 );
+          Spit( Buff );
+          Buff[0] = 0;
+        }
+
+        sprintf( Buff, "Action: Route %s", GetFlavor( Link + i, SqFlavors ) );
+
+        if( _host )
           strcat( Buff, "%.0" );
-        }
         else
-        {
-          WriteNode( Link[i].addr, Buff, 1 );
-        }
+          WriteNode( tmpNode, Buff, 1 );
+
         AddPoint = true;
         strcat( Buff, "\n\\" );
         Spit( Buff );
