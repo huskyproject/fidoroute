@@ -270,6 +270,25 @@ static boolean IsMyNode( nodeaddr addr )
   return false;
 }
 
+static ushort BestAKALevel( nodeaddr addr )
+{
+  if ( IsMyNode( addr ) ) return 0;
+
+  ushort blevel = 3;
+  for( int i = 0; i < nAKAs; i++ )
+  {
+    ushort alevel = 3;
+    if( MyNode[i].z == addr.z ) // same zone
+    {
+      alevel = 2;
+      if( MyNode[i].n == addr.n ) // same net
+        alevel = 1;
+      if ( blevel > alevel ) blevel = alevel;
+    }
+  }
+  return blevel;
+}
+
 static boolean DirectLink( ushort Idx )
 {
   int i;
@@ -368,21 +387,27 @@ static nodeaddr ScanNode( char **p )
 #undef DONE
 }
 
+static ushort WildLevel( nodeaddr n )
+{
+  ushort wildlevel = 0;
+  if( n.z == WILDVALUE )
+    wildlevel = 3;
+  else if( n.n == WILDVALUE )
+    wildlevel = 2;
+  else if( n.f == WILDVALUE )
+    wildlevel = 1;
+  return wildlevel;
+}
+
 static ushort WriteNode( nodeaddr Node, char *out, short addrtype )
 {
   char tmp[10];
-  ushort wildlevel = 0;
-  if( Node.f == WILDVALUE )
-    wildlevel++;
-  if( Node.n == WILDVALUE )
-    wildlevel++;
-  if( Node.z == WILDVALUE )
-    wildlevel++;
+  ushort wildlevel = WildLevel( Node );
   if( wildlevel == level || addrtype == 1 )
   {
     const char *Wild = ( StarWild ) ? "*" : "All";
     strcat( out, " " );
-    if( Node.z == WILDVALUE && Node.n == WILDVALUE && Node.n == WILDVALUE )
+    if( wildlevel == 3 )
       strcat( out, StarWild ? "*:*/*" : "World" );
     else
     {
@@ -527,7 +552,7 @@ static void FixWildcard( void )
 
 static boolean IsWild( nodeaddr n )
 {
-  return ( n.z == WILDVALUE || n.n == WILDVALUE || n.f == WILDVALUE ) ? true : false;
+  return WildLevel( n ) ? true : false;
 }
 
 int CmpWild( void const *l1, void const *l2 )
@@ -1016,13 +1041,7 @@ static char *AddInt( char *where, ushort value )
 static boolean WriteIfNode( nodeaddr Node, char *out, ushort wmode )
 {
   char *p = out + strlen( out );
-  ushort wildlevel = 0;
-  if( Node.f == WILDVALUE )
-    wildlevel++;
-  if( Node.n == WILDVALUE )
-    wildlevel++;
-  if( Node.z == WILDVALUE )
-    wildlevel++;
+  ushort wildlevel = WildLevel( Node );
   if( wildlevel == level || wmode )
   {
     if( Node.f != WILDVALUE )
@@ -1180,13 +1199,7 @@ static void PutRoutingUnimail( void )
 ushort WriteNodeQecho( nodeaddr Node, char *out, ushort addrtype )
 {
   char tmp[20];
-  ushort wildlevel = 0;
-  if( Node.f == WILDVALUE )
-    wildlevel++;
-  if( Node.n == WILDVALUE )
-    wildlevel++;
-  if( Node.z == WILDVALUE )
-    wildlevel++;
+  ushort wildlevel = WildLevel( Node );
   if( wildlevel == level || addrtype == 1 )
   {
     if( wildlevel == 3 )
@@ -1316,21 +1329,15 @@ ushort WriteNodeFtrack( nodeaddr Node, char *out, ushort addrtype )
 {
   static const char *prefix = "Mask: * * * ";
   static const char *postfix = " * *";
-  ushort wildlevel = 0;
-  if( Node.f == WILDVALUE )
-    wildlevel++;
-  if( Node.n == WILDVALUE )
-    wildlevel++;
-  if( Node.z == WILDVALUE )
-    wildlevel++;
-  if( wildlevel == level || addrtype > 0 )
+  ushort wildlevel = WildLevel( Node );
+  if( wildlevel == level || addrtype )
   {
     counter++;
     strcpy( out, prefix );
     if( level == 3 )
       strcat( out, "*" );
     else
-      WriteNode( Node, out + strlen( prefix ), addrtype == 2 ? 1 : addrtype );
+      WriteNode( Node, out + strlen( prefix ), addrtype );
     strcat( out, postfix );
   }
   return ushort( strlen( out ) );
@@ -1348,6 +1355,7 @@ static void PutRoutingFtrack( void )
   Prefix[0] = CmntSym;
   Prefix[1] = 0;
   nodeaddr tmpNode;
+  ushort isHost = 0;
   MAX_ROUTE_LEN = 10;
   fprintf( NewRoute, CREATED, CmntSym, "Ftrack", MyNode->z, MyNode->n,
            MyNode->f, CmntSym, ctime( &currtime ), CmntSym );
@@ -1359,8 +1367,13 @@ static void PutRoutingFtrack( void )
     for( i = 0; i < nLinks; i++ )
     {
       tmpNode = Link[i].addr;
+      isHost = ( DirectLink( tmpNode ) && BestAKALevel( tmpNode ) == 1 && tmpNode.f == WILDVALUE );
+
+      if (isHost && level != 1) continue;
+
       counter = 0;
       Buff[0] = 0;
+
       if( !level )
       {
         WriteNodeFtrack( tmpNode, Buff, 0 );
@@ -1372,27 +1385,27 @@ static void PutRoutingFtrack( void )
         }
         counter++;
       }
+
       PutDownLinksGeneric( InMemory( tmpNode ), 0, WriteNodeFtrack );
-      if( counter )
+      if( counter || isHost )
       {
-        ushort _host = !level
-            && ( DirectLink( tmpNode ) && MyNode->z == tmpNode.z && MyNode->n == tmpNode.n && tmpNode.f == WILDVALUE );
-
-        AddPoint = false;
-
-        if( _host )
+        if( isHost )
         {
-          WriteNodeFtrack( tmpNode, Buff, 2 );
+          AddPoint = true;
+          WriteNodeFtrack( tmpNode, Buff, 0 );
           Spit( Buff );
           Buff[0] = 0;
         }
 
         sprintf( Buff, "Action: Route %s", GetFlavor( Link + i, SqFlavors ) );
 
-        if( _host )
-          strcat( Buff, "%.0" );
+        if( isHost )
+          strcat( Buff, " %.0" );
         else
+        {
+          AddPoint = false;
           WriteNode( tmpNode, Buff, 1 );
+        }
 
         AddPoint = true;
         strcat( Buff, "\n\\" );
