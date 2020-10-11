@@ -126,7 +126,7 @@ struct CfgValue
   const char *Name;
   void *Value;
   ushort Pass;
-    boolean( *LoadVal ) ( char *in, void *out );
+  boolean( *LoadVal ) ( char *in, void *out );
 };
 
 static const char *ErrNoMemory = EOLCHR "Unable to allocate memory.";
@@ -272,18 +272,17 @@ static boolean IsMyNode( nodeaddr addr )
 
 static ushort BestAKALevel( nodeaddr addr )
 {
-  if ( IsMyNode( addr ) ) return 0;
+  if( IsMyNode( addr ) ) return 0;
 
   ushort blevel = 3;
   for( int i = 0; i < nAKAs; i++ )
   {
-    ushort alevel = 3;
     if( MyNode[i].z == addr.z ) // same zone
     {
-      alevel = 2;
+      ushort alevel = 2;
       if( MyNode[i].n == addr.n ) // same net
         alevel = 1;
-      if ( blevel > alevel ) blevel = alevel;
+      if( blevel > alevel ) blevel = alevel;
     }
   }
   return blevel;
@@ -557,25 +556,25 @@ static boolean IsWild( nodeaddr n )
 
 int CmpWild( void const *l1, void const *l2 )
 {
-  listitem *pl1 = ( listitem * ) l1;
-  listitem *pl2 = ( listitem * ) l2;
+  nodeaddr a1 = ( static_cast<const listitem *>( l1 ) )->addr;
+  nodeaddr a2 = ( static_cast<const listitem *>( l2 ) )->addr;
 
-  if( pl1->addr.z > pl2->addr.z )
+  if( a1.z > a2.z )
     return 1;
 
-  else if( pl1->addr.z < pl2->addr.z )
+  else if( a1.z < a2.z )
     return -1;
 
-  else if( pl1->addr.n > pl2->addr.n )
+  else if( a1.n > a2.n )
     return 1;
 
-  else if( pl1->addr.n < pl2->addr.n )
+  else if( a1.n < a2.n )
     return -1;
 
-  else if( pl1->addr.f > pl2->addr.f )
+  else if( a1.f > a2.f )
     return 1;
 
-  else if( pl1->addr.f < pl2->addr.f )
+  else if( a1.f < a2.f )
     return -1;
 
   else
@@ -1355,7 +1354,6 @@ static void PutRoutingFtrack( void )
   Prefix[0] = CmntSym;
   Prefix[1] = 0;
   nodeaddr tmpNode;
-  ushort isHost = 0;
   MAX_ROUTE_LEN = 10;
   fprintf( NewRoute, CREATED, CmntSym, "Ftrack", MyNode->z, MyNode->n,
            MyNode->f, CmntSym, ctime( &currtime ), CmntSym );
@@ -1367,9 +1365,9 @@ static void PutRoutingFtrack( void )
     for( i = 0; i < nLinks; i++ )
     {
       tmpNode = Link[i].addr;
-      isHost = ( DirectLink( tmpNode ) && BestAKALevel( tmpNode ) == 1 && tmpNode.f == WILDVALUE );
+      ushort isHost = ( DirectLink( tmpNode ) && BestAKALevel( tmpNode ) == 1 && tmpNode.f == WILDVALUE );
 
-      if (isHost && level != 1) continue;
+      if( isHost && level != 1 ) continue;
 
       counter = 0;
       Buff[0] = 0;
@@ -1378,7 +1376,7 @@ static void PutRoutingFtrack( void )
       {
         WriteNodeFtrack( tmpNode, Buff, 0 );
 
-        if ( Buff[0] )
+        if( Buff[0] )
         {
           Spit( Buff );
           Buff[0] = 0;
