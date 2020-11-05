@@ -27,7 +27,7 @@ CDEFS?=-D_TARGET=\"`uname -s`\"
 DEBUGOPTS?=-Wall -ggdb
 COPTS?=-s -O2
 PREFIX?=/usr/local
-MANDIR?=$(PREFIX)/man
+MANDIR?=$(PREFIX)/share/man
 MAN1DIR?=$(MANDIR)/man1/
 MAN5DIR?=$(MANDIR)/man5/
 BINDIR?=$(PREFIX)/bin/
@@ -42,25 +42,25 @@ debug: $(BINARIES)
 
 doc: $(DOCS)
 
-fidoroute.conf.ru.html:
-	wget -k -O fidoroute.conf.ru.html 'http://sourceforge.net/apps/mediawiki/husky/index.php?title=%D0%A4%D0%B0%D0%B9%D0%BB_fidoroute.conf&printable=yes' || true
+#fidoroute.conf.ru.html:
+#	wget -k -O fidoroute.conf.ru.html 'http://sourceforge.net/apps/mediawiki/husky/index.php?title=%D0%A4%D0%B0%D0%B9%D0%BB_fidoroute.conf&printable=yes' || true
 
 install-doc: doc
-	if [ ! -d $(DOCDIR) ]; then install -d $(DOCDIR); fi
-	install fidoroute.conf.ru.html $(DOCDIR)
+	if [ ! -d $(DESTDIR)$(DOCDIR) ]; then install -d $(DESTDIR)$(DOCDIR); fi
+	install fidoroute.conf.ru.html $(DESTDIR)$(DOCDIR)
 
 install-man:
-	if [ ! -d $(MAN1DIR) ]; then install -d $(MAN1DIR); fi
-	install $(MAN1PAGES) $(MAN1DIR)
-	if [ ! -d $(MAN5DIR) ]; then install -d $(MAN5DIR); fi
-	install $(MAN5PAGES) $(MAN5DIR)
+	if [ ! -d $(DESTDIR)$(MAN1DIR) ]; then install -d $(DESTDIR)$(MAN1DIR); fi
+	install $(MAN1PAGES) $(DESTDIR)$(MAN1DIR)
+	if [ ! -d $(DESTDIR)$(MAN5DIR) ]; then install -d $(DESTDIR)$(MAN5DIR); fi
+	install $(MAN5PAGES) $(DESTDIR)$(MAN5DIR)
 
 install-debug: debug
-	if [ ! -d $(BINDIR) ]; then install -d $(BINDIR); fi
-	install $(BINARIES) $(BINDIR)
+	if [ ! -d $(DESTDIR)$(BINDIR) ]; then install -d $(DESTDIR)$(BINDIR); fi
+	install $(BINARIES) $(DESTDIR)$(BINDIR)
 
 install-bin: all
-	if [ ! -d $(BINDIR) ]; then install -d $(BINDIR); fi
-	install $(BINARIES) $(BINDIR)
+	if [ ! -d $(DESTDIR)$(BINDIR) ]; then install -d $(DESTDIR)$(BINDIR); fi
+	install $(BINARIES) $(DESTDIR)$(BINDIR)
 
 install: install-bin install-man
