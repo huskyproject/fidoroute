@@ -28,14 +28,14 @@ Release: %{vendor_prefix}%relnum%{vendor_suffix}
 %if %_vendor != "redhat"
 Group: %pkg_group
 %endif
-Summary: fidoroute is a Fidonet node route file generator
+Summary: A Fidonet node route file generator
 URL: https://github.com/huskyproject/%name/archive/v%ver_major.%ver_minor.tar.gz
 License: GPLv2
 Source: %name-%ver_major.%ver_minor.tar.gz
 BuildRequires: gcc-c++
 
 %description
-fidoroute is a Fidonet node route file generator
+A Fidonet node route file generator
 
 %prep
 %setup -q -n %name-%ver_major.%ver_minor
@@ -49,7 +49,7 @@ umask 022
 chmod -R a+rX,u+w,go-w %buildroot
 
 %files
-%defattr(-,root,root)
-%_bindir/fidoroute
+%defattr(0644,root,root)
+%attr(0755, root, root) %_bindir/fidoroute
 %_mandir/man1/fidoroute.*
 %_mandir/man5/fidoroute.conf.*
