@@ -2,7 +2,7 @@
 %global ver_minor 38
 
 # release number for Release: header
-%global relnum 1
+%global relnum 2
 
 %global debug_package %nil
 
@@ -12,12 +12,12 @@
 %global pkg_group Applications/Communications
 
 # for CentOS, Fedora and RHEL
-%if %_vendor == "redhat"
+%if "%_vendor" == "redhat"
     %global vendor_suffix %dist
 %endif
 
 # for ALT Linux
-%if %_vendor == "alt"
+%if "%_vendor" == "alt"
     %global vendor_prefix %_vendor
     %global pkg_group Networking/FTN
 %endif
@@ -25,7 +25,7 @@
 Name: fidoroute
 Version: %ver_major.%ver_minor
 Release: %{vendor_prefix}%relnum%{vendor_suffix}
-%if %_vendor != "redhat"
+%if "%_vendor" != "redhat"
 Group: %pkg_group
 %endif
 Summary: A Fidonet node route file generator
