@@ -22,7 +22,7 @@
 BINARIES=fidoroute
 MAN1PAGES=fidoroute.1
 MAN5PAGES=fidoroute.conf.5
-DOCS=fidoroute.conf.ru.html
+#DOCS=fidoroute.conf.ru.html
 CDEFS?=-D_TARGET=\"`uname -s`\"
 DEBUGOPTS?=-Wall -ggdb
 COPTS?=-s -O2
@@ -34,26 +34,34 @@ BINDIR?=$(PREFIX)/bin/
 DOCDIR?=$(PREFIX)/share/doc/fidoroute/
 MANPAGES=$(MAN1PAGES) $(MAN5PAGES)
 
-all: $(BINARIES)
+all: $(BINARIES) $(MAN1PAGES).gz $(MAN5PAGES).gz
+
+$(BINARIES): fidoroute.cpp
 	g++ $(COPTS) $(CDEFS) -o fidoroute fidoroute.cpp
+
+$(MAN1PAGES).gz: $(MAN1PAGES)
+	gzip -c $(MAN1PAGES) > $(MAN1PAGES).gz
+
+$(MAN5PAGES).gz: $(MAN5PAGES)
+	gzip -c $(MAN5PAGES) > $(MAN5PAGES).gz
 
 debug: $(BINARIES)
 	g++ $(DEBUGOPTS) $(CDEFS) -o fidoroute fidoroute.cpp
 
-doc: $(DOCS)
+#doc: $(DOCS)
 
 #fidoroute.conf.ru.html:
 #	wget -k -O fidoroute.conf.ru.html 'http://sourceforge.net/apps/mediawiki/husky/index.php?title=%D0%A4%D0%B0%D0%B9%D0%BB_fidoroute.conf&printable=yes' || true
 
-install-doc: doc
-	if [ ! -d $(DESTDIR)$(DOCDIR) ]; then install -d $(DESTDIR)$(DOCDIR); fi
-	install fidoroute.conf.ru.html $(DESTDIR)$(DOCDIR)
+#install-doc: doc
+#	if [ ! -d $(DESTDIR)$(DOCDIR) ]; then install -d $(DESTDIR)$(DOCDIR); fi
+#	install fidoroute.conf.ru.html $(DESTDIR)$(DOCDIR)
 
 install-man:
 	if [ ! -d $(DESTDIR)$(MAN1DIR) ]; then install -d $(DESTDIR)$(MAN1DIR); fi
-	install $(MAN1PAGES) $(DESTDIR)$(MAN1DIR)
+	install -m 0644 $(MAN1PAGES).gz $(DESTDIR)$(MAN1DIR)
 	if [ ! -d $(DESTDIR)$(MAN5DIR) ]; then install -d $(DESTDIR)$(MAN5DIR); fi
-	install $(MAN5PAGES) $(DESTDIR)$(MAN5DIR)
+	install -m 0644 $(MAN5PAGES).gz $(DESTDIR)$(MAN5DIR)
 
 install-debug: debug
 	if [ ! -d $(DESTDIR)$(BINDIR) ]; then install -d $(DESTDIR)$(BINDIR); fi
@@ -64,3 +72,15 @@ install-bin: all
 	install $(BINARIES) $(DESTDIR)$(BINDIR)
 
 install: install-bin install-man
+
+clean: ;
+
+distclean: clean
+	-rm -f $(BINARIES)
+	-rm -f $(MAN1PAGES).gz
+	-rm -f $(MAN5PAGES).gz
+
+uninstall:
+	-rm -f $(DESTDIR)$(BINDIR)/$(BINARIES)
+	-rm -f $(DESTDIR)$(MAN1DIR)/$(MAN1PAGES).gz
+	-rm -f $(DESTDIR)$(MAN5DIR)/$(MAN5PAGES).gz
