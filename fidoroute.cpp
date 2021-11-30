@@ -60,8 +60,10 @@
 # define fnmerge _makepath
 #endif // if defined (__TSC__)
 
-#define VERSION "1.38"
-#define CREATED "%c %s routing for %d:%d/%d. Created by Hubroute generator " VERSION "" EOLCHR \
+#include "version.h"
+
+#define CREATED "%c %s routing for %d:%d/%d. Created by Hubroute generator %d.%d", \
+    fidoroute_VER_MAJOR, fidoroute_VER_MINOR, "" EOLCHR \
     "%c %45s%c" EOLCHR ""
 #ifdef _TARGET
 # if defined (__GNUC__)
@@ -2681,7 +2683,7 @@ int main(int argc, char ** argv)
     }
 
     fprintf(stderr,
-            "Hubroute generator v." VERSION "(" TARGET ")%s%s" EOLCHR "Copyright (c) 1994-2003 Yuri Safronov 2:5020/204" EOLCHR "Copyright (c) 2009-2016 Husky Project development team" EOLCHR,
+            "Hubroute generator v.%d.%d", fidoroute_VER_MAJOR, fidoroute_VER_MINOR, "(" TARGET ")%s%s" EOLCHR "Copyright (c) 1994-2003 Yuri Safronov 2:5020/204" EOLCHR "Copyright (c) 2009-2016 Husky Project development team" EOLCHR,
             REVISION[0] ? "rev." : "",
             REVISION);
 
