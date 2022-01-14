@@ -35,11 +35,11 @@ ifdef DOCDIR
     fidoroute_doc_ru_DST = $(DOCDIR_DST)fidoroute_ru.txt
 endif
 
-.PHONY: fidoroute_all fidoroute_install fidoroute_uninstall fidoroute_clean \
+.PHONY: fidoroute_build fidoroute_install fidoroute_uninstall fidoroute_clean \
         fidoroute_distclean fidoroute_depend fidoroute_install_doc \
         fidoroute_clean_OBJ fidoroute_main_distclean
 
-fidoroute_all: $(fidoroute_TARGET_BLD) $(fidoroute_MAN1BLD) $(fidoroute_MAN5BLD) ;
+fidoroute_build: $(fidoroute_TARGET_BLD) $(fidoroute_MAN1BLD) $(fidoroute_MAN5BLD) ;
 
 
 # Build application
