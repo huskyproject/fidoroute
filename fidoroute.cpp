@@ -62,9 +62,12 @@
 
 #include "version.h"
 
-#define CREATED "%c %s routing for %d:%d/%d. Created by Hubroute generator %d.%d", \
-    fidoroute_VER_MAJOR, fidoroute_VER_MINOR, "" EOLCHR \
-    "%c %45s%c" EOLCHR ""
+#define CREATED1 "%c %s routing for %d:%d/%d.", CmntSym, targetApp, \
+                 MyNode->z, MyNode->n, MyNode->f
+#define CREATED2 " Created by Hubroute generator %d.%d\n", \
+                fidoroute_VER_MAJOR, fidoroute_VER_MINOR
+#define CREATED3 "%c %45s%c\n", CmntSym, ctime(&currtime), CmntSym
+
 #ifdef _TARGET
 # if defined (__GNUC__)
 #  define TARGET "GNU/" _TARGET
@@ -135,7 +138,7 @@ struct CfgValue
 static const char * ErrNoMemory         = EOLCHR "Unable to allocate memory.";
 static const char * ErrOpenCfg          = EOLCHR "Unable to open config file.";
 static const char * ErrNoFile           = "Unable to open file.";
-static const char * ErrOpenTmp          = EOLCHR "Unable to open temp file.";
+// static const char * ErrOpenTmp          = EOLCHR "Unable to open temp file.";
 static const char * ErrOpenTmpX         = EOLCHR "Unable to open temp file \"%s\"." EOLCHR;
 static const char * ErrOpenDest         = EOLCHR "Unable to open dest file.";
 static const char * ErrUnknownRouteType = EOLCHR "Unsupported route type.";
@@ -582,7 +585,7 @@ static void FixWildcard(void)
         }
 
         ushort MaxQuality, MaxQualityIdx, cmp;
-        MaxQuality = 0;
+        MaxQuality = MaxQualityIdx = 0;
 
         // Try to route unrouted items to nearest wildcard
         if(Node[i].idx == WILDVALUE && !DirectLink(i))  // not routed
@@ -929,16 +932,12 @@ static void PutRoutingSq(void)
     FullAddr      = false;
     FillRoute     = false;
     WithSlash     = false;
-    fprintf(NewRoute,
-            CREATED,
-            ';',
-            "Squish",
-            MyNode->z,
-            MyNode->n,
-            MyNode->f,
-            ';',
-            ctime(&currtime),
-            ';');
+    CmntSym       = ';';
+    const char * const targetApp = "Squish";
+
+    fprintf(NewRoute, CREATED1);
+    fprintf(NewRoute, CREATED2);
+    fprintf(NewRoute, CREATED3);
     Spit("; *** Direct links" EOLCHR ";");
     DirectsSQ();
     Spit(";" EOLCHR "; *** Route" EOLCHR ";");
@@ -976,16 +975,12 @@ static void PutRoutingItr(void)
     FullAddr      = true;
     FillRoute     = false;
     WithSlash     = false;
-    fprintf(NewRoute,
-            CREATED,
-            ';',
-            "iTrack",
-            MyNode->z,
-            MyNode->n,
-            MyNode->f,
-            ';',
-            ctime(&currtime),
-            ';');
+    CmntSym       = ';';
+    const char * const targetApp = "iTrack";
+
+    fprintf(NewRoute, CREATED1);
+    fprintf(NewRoute, CREATED2);
+    fprintf(NewRoute, CREATED3);
 
     for(level = 0; level < 4; level++)
     {
@@ -1031,16 +1026,12 @@ static void PutRoutingTmail(void)
     FullAddr      = false;
     FillRoute     = false;
     WithSlash     = true;
-    fprintf(NewRoute,
-            CREATED,
-            ';',
-            "T-mail",
-            MyNode->z,
-            MyNode->n,
-            MyNode->f,
-            ';',
-            ctime(&currtime),
-            ';');
+    CmntSym       = ';';
+    const char * const targetApp = "T-mail";
+
+    fprintf(NewRoute, CREATED1);
+    fprintf(NewRoute, CREATED2);
+    fprintf(NewRoute, CREATED3);
     Spit("; *** Direct links");
     DirectsTmail();
 
@@ -1121,16 +1112,12 @@ static void PutRoutingBpack(void)
     FullAddr      = true;
     FillRoute     = false;
     WithSlash     = false;
-    fprintf(NewRoute,
-            CREATED,
-            ';',
-            "BPack",
-            MyNode->z,
-            MyNode->n,
-            MyNode->f,
-            ';',
-            ctime(&currtime),
-            ';');
+    CmntSym       = ';';
+    const char * const targetApp = "BPack";
+
+    fprintf(NewRoute, CREATED1);
+    fprintf(NewRoute, CREATED2);
+    fprintf(NewRoute, CREATED3);
     Spit("; *** Direct links");
     DirectsBpack();
 
@@ -1172,16 +1159,11 @@ static void PutRoutingImb(void)
     FillRoute     = false;
     WithSlash     = false;
     CmntSym       = '#';
-    fprintf(NewRoute,
-            CREATED,
-            '#',
-            "Imbink",
-            MyNode->z,
-            MyNode->n,
-            MyNode->f,
-            '#',
-            ctime(&currtime),
-            '#');
+    const char * const targetApp = "Imbink";
+
+    fprintf(NewRoute, CREATED1);
+    fprintf(NewRoute, CREATED2);
+    fprintf(NewRoute, CREATED3);
     PutDirects(FILE_FLAVOR, FILE_FLAVOR, "FSENDTO ");
     PutDirects(NOARC_FLAVOR, 0, "Compress ZIP ");
 
@@ -1218,16 +1200,11 @@ static void PutRoutingXmail(void)
     FillRoute     = false;
     WithSlash     = false;
     CmntSym       = ';';
-    fprintf(NewRoute,
-            CREATED,
-            ';',
-            "Xmail",
-            MyNode->z,
-            MyNode->n,
-            MyNode->f,
-            ';',
-            ctime(&currtime),
-            ';');
+    const char * const targetApp = "Xmail";
+
+    fprintf(NewRoute, CREATED1);
+    fprintf(NewRoute, CREATED2);
+    fprintf(NewRoute, CREATED3);
     fprintf(NewRoute, "; *** Directs" EOLCHR "");
     level = 0;
     int i;
@@ -1357,8 +1334,11 @@ static void PutRoutingIfmail(void)
     FillRoute     = false;
     WithSlash     = false;
     CmntSym       = '#';
-    fprintf(NewRoute, CREATED, '#', "sendmail", MyNode->z, MyNode->n, MyNode->f, '#',
-            ctime(&currtime), '#');
+    const char * const targetApp = "sendmail";
+
+    fprintf(NewRoute, CREATED1);
+    fprintf(NewRoute, CREATED2);
+    fprintf(NewRoute, CREATED3);
 
     for(level = 0; level < 4; level++)
     {
@@ -1369,10 +1349,10 @@ static void PutRoutingIfmail(void)
         {
             Buff[0] = 0;
 
-            if(Node[i].idx != WILDVALUE && // routed
+            if((Node[i].idx != WILDVALUE && // routed
                Node[i].idx != (WILDVALUE - 1) && // not joined with wildcard
-               (Node[Node[i].idx].idx != WILDVALUE && Node[Node[i].idx].idx != WILDVALUE - 1 ||
-                DirectLink(Node[i].idx)) && !IsMyNode(Node[Node[i].idx].addr) || DirectLink(i))
+               ((Node[Node[i].idx].idx != WILDVALUE && Node[Node[i].idx].idx != WILDVALUE - 1) ||
+                DirectLink(Node[i].idx)) && !IsMyNode(Node[Node[i].idx].addr)) || DirectLink(i))
             {
                 strcpy(Buff, ".");
 
@@ -1415,16 +1395,12 @@ static void PutRoutingBip(void)
     FullAddr      = false;
     FillRoute     = false;
     WithSlash     = false;
-    fprintf(NewRoute,
-            CREATED,
-            ';',
-            "BiP",
-            MyNode->z,
-            MyNode->n,
-            MyNode->f,
-            ';',
-            ctime(&currtime),
-            ';');
+    CmntSym       = ';';
+    const char * const targetApp = "BiP";
+
+    fprintf(NewRoute, CREATED1);
+    fprintf(NewRoute, CREATED2);
+    fprintf(NewRoute, CREATED3);
 
     for(level = 3; level != 0xFFFF; level--)
     {
@@ -1474,8 +1450,12 @@ static void PutRoutingUnimail(void)
     FullAddr      = true;
     FillRoute     = false;
     WithSlash     = false;
-    fprintf(NewRoute, CREATED, ';', "Unimail", MyNode->z, MyNode->n, MyNode->f, ';',
-            ctime(&currtime), ';');
+    CmntSym       = ';';
+    const char * const targetApp = "Unimail";
+
+    fprintf(NewRoute, CREATED1);
+    fprintf(NewRoute, CREATED2);
+    fprintf(NewRoute, CREATED3);
     Spit(";" EOLCHR "; *** Route" EOLCHR ";");
 
     for(level = 0; level < 4; level++)
@@ -1542,18 +1522,13 @@ static void PutRoutingQecho(void)
     FullAddr      = true;
     FillRoute     = false;
     WithSlash     = false;
-    CmntSym       = '#';
     MAX_ROUTE_LEN = 100;
-    fprintf(NewRoute,
-            CREATED,
-            '#',
-            "QECHO",
-            MyNode->z,
-            MyNode->n,
-            MyNode->f,
-            '#',
-            ctime(&currtime),
-            '#');
+    CmntSym       = '#';
+    const char * const targetApp = "QECHO";
+
+    fprintf(NewRoute, CREATED1);
+    fprintf(NewRoute, CREATED2);
+    fprintf(NewRoute, CREATED3);
     Spit("#" EOLCHR "# *** Route" EOLCHR "#");
 
     for(level = 0; level < 3; level++)
@@ -1628,8 +1603,11 @@ static void PutRoutingFidogate(void)
     FillRoute     = false;
     WithSlash     = false;
     CmntSym       = '#';
-    fprintf(NewRoute, CREATED, CmntSym, "Fidogate", MyNode->z, MyNode->n, MyNode->f, '#',
-            ctime(&currtime), '#');
+    const char * const targetApp = "Fidogate";
+
+    fprintf(NewRoute, CREATED1);
+    fprintf(NewRoute, CREATED2);
+    fprintf(NewRoute, CREATED3);
     Spit("# *** Direct links" EOLCHR "#");
     DirectsFidogate();
     Spit("#" EOLCHR "# *** Route" EOLCHR "#");
@@ -1696,11 +1674,13 @@ static void PutRoutingFtrack(void)
     CmntSym       = '\\';
     Prefix[0]     = CmntSym;
     Prefix[1]     = 0;
-    nodeaddr tmpNode;
-
     MAX_ROUTE_LEN = 10;
-    fprintf(NewRoute, CREATED, CmntSym, "Ftrack", MyNode->z, MyNode->n, MyNode->f, CmntSym,
-            ctime(&currtime), CmntSym);
+    nodeaddr tmpNode;
+    const char * const targetApp = "Ftrack";
+
+    fprintf(NewRoute, CREATED1);
+    fprintf(NewRoute, CREATED2);
+    fprintf(NewRoute, CREATED3);
 
     for(level = 0; level < 4; level++)
     {
@@ -1778,16 +1758,11 @@ static void PutRoutingHusky(void)
     FillRoute     = false;
     WithSlash     = false;
     CmntSym       = '#';
-    fprintf(NewRoute,
-            CREATED,
-            '#',
-            "Husky",
-            MyNode->z,
-            MyNode->n,
-            MyNode->f,
-            '#',
-            ctime(&currtime),
-            '#');
+    const char * const targetApp = "Husky";
+
+    fprintf(NewRoute, CREATED1);
+    fprintf(NewRoute, CREATED2);
+    fprintf(NewRoute, CREATED3);
 
     for(level = 0; level < 4; level++)
     {
@@ -2683,9 +2658,11 @@ int main(int argc, char ** argv)
     }
 
     fprintf(stderr,
-            "Hubroute generator v.%d.%d", fidoroute_VER_MAJOR, fidoroute_VER_MINOR, "(" TARGET ")%s%s" EOLCHR "Copyright (c) 1994-2003 Yuri Safronov 2:5020/204" EOLCHR "Copyright (c) 2009-2016 Husky Project development team" EOLCHR,
-            REVISION[0] ? "rev." : "",
-            REVISION);
+            "Hubroute generator v.%d.%d(" TARGET ")\n" \
+            "Copyright (c) 1994-2003 Yuri Safronov 2:5020/204\n" \
+            "Copyright (c) 2009-2016 Husky Project development team\n",
+            fidoroute_VER_MAJOR, fidoroute_VER_MINOR);
+    fprintf(stderr, "%s%s", REVISION[0] ? "rev." : "", REVISION);
 
     if(argc > 1)
     {
