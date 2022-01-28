@@ -43,7 +43,12 @@
 # include <sys/param.h>         // for MAXPATHLEN
 # include <dirent.h>
 # include <unistd.h>
-# include <glob.h>
+# if defined (__MINGW32__)
+#  define fnsplit _splitpath
+#  define fnmerge _makepath
+# else
+#  include <glob.h>
+# endif
 
 # define strnicmp(x, y, z) strncasecmp(x, y, z)
 # define stricmp(x, y) strcasecmp(x, y)
@@ -201,7 +206,11 @@ static ushort DefaultFlavor = HOLD_FLAVOR;
 # define MAXEXT MAXPATH
 #endif
 
-#if defined (__GNUC__)
+#if defined (__MINGW32__)
+# define MAXDRIVE 3
+#endif
+
+#if defined (__GNUC__) && !defined (__MINGW32__)
 static char TempFile[MAXPATH];
 
 #else
@@ -209,7 +218,7 @@ static char TempFile[MAXPATH];
 static char OutDrv[MAXDRIVE];
 #endif
 
-#if !defined (__GNUC__)
+#if !defined (__GNUC__) || defined (__MINGW32__)
 static char OutDir[MAXDIR];
 static char OutName[MAXFILE];
 static char OutExt[MAXEXT];
@@ -232,7 +241,7 @@ static ushort RouteMode   = 0;
 static ushort MinMode     = 0;
 static ushort KillTransit = 0;
 
-#if defined (__GNUC__)
+#if defined (__GNUC__) && ! defined (__MINGW32__)
 glob_t globbuf;
 #endif
 
@@ -2326,7 +2335,7 @@ static boolean GetHubRoute(char * p, void *)
 
 #endif // if defined (__TSC__)
 
-#if defined (__GNUC__)
+#if defined (__GNUC__) && !defined (__MINGW32__)
 
         if(!glob(Name, GLOB_ERR, NULL, &globbuf))
         {
@@ -2336,7 +2345,7 @@ static boolean GetHubRoute(char * p, void *)
 #endif
 
         if(maxext > (-1))       // found!
-#if !defined (__GNUC__)
+#if !defined (__GNUC__) || defined (__MINGW32__)
         {
             fnmerge(Name, OutDrv, OutDir, OutName, OutExt);
         }
