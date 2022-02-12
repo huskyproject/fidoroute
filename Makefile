@@ -53,10 +53,6 @@ $(fidoroute_OBJS): $(fidoroute_SRC) | $(fidoroute_OBJDIR)
 $(fidoroute_OBJDIR): | $(fidoroute_BUILDDIR)
 	[ -d $@ ] || $(MKDIR) $(MKDIROPT) $@
 
-$(fidoroute_BUILDDIR): | do_not_run_make_as_root
-	[ -d $@ ] || $(MKDIR) $(MKDIROPT) $@
-
-
 # Build man pages
 ifdef MAN1DIR
     $(fidoroute_MAN1BLD): $(fidoroute_MANDIR)$(fidoroute_MAN1PAGES) | $(fidoroute_BUILDDIR) do_not_run_make_as_root
@@ -153,7 +149,3 @@ ifdef DOCDIR
 	-$(RM) $(RMOPT) $(fidoroute_doc_en_DST)
 	-$(RM) $(RMOPT) $(fidoroute_doc_ru_DST)
 endif
-
-
-# Depend
-fidoroute_depend: ;
