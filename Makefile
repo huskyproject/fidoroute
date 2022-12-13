@@ -2,7 +2,7 @@
 #
 # This file is part of fidoroute, part of the Husky fidonet software project
 # Use with GNU make v.3.82 or later
-# Requires: husky enviroment
+# Requires: husky environment
 #
 
 fidoroute_CFLAGS = $(CFLAGS)
@@ -94,9 +94,6 @@ else
 
     $(fidoroute_MAN5DST): $(fidoroute_MAN5BLD) | $(DESTDIR)$(MAN5DIR)
 	$(INSTALL) $(IMOPT) $< $(DESTDIR)$(MAN5DIR); $(TOUCH) "$@"
-
-$(DESTDIR)$(MAN5DIR): | $(DESTDIR)$(MANDIR)
-	[ -d $@ ] || $(MKDIR) $(MKDIROPT) $@
 endif
 
 
