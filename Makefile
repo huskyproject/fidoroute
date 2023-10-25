@@ -17,13 +17,13 @@ fidoroute_TARGET_DST = $(BINDIR_DST)$(fidoroute_TARGET)
 
 ifdef MAN1DIR
     fidoroute_MAN1PAGES := fidoroute.1
-    fidoroute_MAN1BLD := $(fidoroute_BUILDDIR)$(fidoroute_MAN1PAGES).gz
-    fidoroute_MAN1DST := $(DESTDIR)$(MAN1DIR)$(DIRSEP)$(fidoroute_MAN1PAGES).gz
+    fidoroute_MAN1BLD := $(fidoroute_BUILDDIR)$(fidoroute_MAN1PAGES)$(_COMPR)
+    fidoroute_MAN1DST := $(DESTDIR)$(MAN1DIR)$(DIRSEP)$(fidoroute_MAN1PAGES)$(_COMPR)
 endif
 ifdef MAN5DIR
     fidoroute_MAN5PAGES := fidoroute.conf.5
-    fidoroute_MAN5BLD := $(fidoroute_BUILDDIR)$(fidoroute_MAN5PAGES).gz
-    fidoroute_MAN5DST := $(DESTDIR)$(MAN5DIR)$(DIRSEP)$(fidoroute_MAN5PAGES).gz
+    fidoroute_MAN5BLD := $(fidoroute_BUILDDIR)$(fidoroute_MAN5PAGES)$(_COMPR)
+    fidoroute_MAN5DST := $(DESTDIR)$(MAN5DIR)$(DIRSEP)$(fidoroute_MAN5PAGES)$(_COMPR)
 endif
 
 ifdef DOCDIR
@@ -56,13 +56,21 @@ $(fidoroute_OBJDIR): | $(fidoroute_BUILDDIR)
 # Build man pages
 ifdef MAN1DIR
     $(fidoroute_MAN1BLD): $(fidoroute_MANDIR)$(fidoroute_MAN1PAGES) | $(fidoroute_BUILDDIR) do_not_run_make_as_root
-	gzip -c $< > $@
+    ifdef COMPRESS
+		$(COMPRESS) -c $< > $@
+    else
+		$(CP) $(CPOPT) $< $@
+    endif
 else
     $(fidoroute_MAN1BLD): ;
 endif
 ifdef MAN5DIR
     $(fidoroute_MAN5BLD): $(fidoroute_MANDIR)$(fidoroute_MAN5PAGES) | $(fidoroute_BUILDDIR) do_not_run_make_as_root
-	gzip -c $< > $@
+    ifdef COMPRESS
+		$(COMPRESS) -c $< > $@
+    else
+		$(CP) $(CPOPT) $< $@
+    endif
 else
     $(fidoroute_MAN5BLD): ;
 endif
